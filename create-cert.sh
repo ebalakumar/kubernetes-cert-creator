@@ -3,7 +3,7 @@
 /usr/bin/openssl req -new -key /certs/${USER_NAME}.pem -out /certs/${USER_NAME}.csr -subj "/CN=users:${USER_NAME}${USER_GROUPS}"
 encoded_string=$(cat /certs/${USER_NAME}.csr | base64 | tr -d '\n')
 
-echo 'apiVersion: certificates.k8s.io/v1beta1\nkind: CertificateSigningRequest\nmetadata:\n  name: user-request-'${USER_NAME}'\nspec:\n  groups:\n  - system:authenticated\n  request: '$encoded_string'\n  usages:\n  - digital signature\n  - key encipherment\n  - client auth' > /certs/cert-request-${USER_NAME}.yaml
+echo 'apiVersion: certificates.k8s.io/v1beta1\nkind: CertificateSigningRequest\nmetadata:\n  name: user-request-'${USER_NAME}'\nspec:\n  groups:\n  - '${USER_GROUPS}'\n  request: '$encoded_string'\n  usages:\n  - digital signature\n  - key encipherment\n  - client auth' > /certs/cert-request-${USER_NAME}.yaml
 
 echo "Creating Cert Request in Cluster"
 kubectl create -f /certs/cert-request-${USER_NAME}.yaml
